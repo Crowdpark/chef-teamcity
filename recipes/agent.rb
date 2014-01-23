@@ -29,20 +29,9 @@ node.teamcity.agents.each do |name, agent| # multiple agents
     raise message
   end
 
-  # Create the users' group
-  group agent.group do
-  end
-
-  # Create the user
-  user agent.user do
-    comment 'TeamCity Agent' + agent.label(' ')
-    gid agent.group
-    home agent.home
-  end
-
   directory agent.system_dir do
-    user agent.user
-    group agent.group
+    user "teamcity"
+    group "teamcity"
     recursive true
 
     action :create
@@ -66,8 +55,8 @@ node.teamcity.agents.each do |name, agent| # multiple agents
 
   # is there a better approach?
   execute "unzip #{install_file} -d #{agent.system_dir}" do
-    user agent.user
-    group agent.group
+    user "teamcity"
+    group "teamcity"
     creates "#{agent.system_dir}/bin"
     not_if &installed_check
   end
@@ -109,8 +98,8 @@ node.teamcity.agents.each do |name, agent| # multiple agents
   # buildAgent.properties (TeamCity will restart if this file is changed)
   template agent_config do
     source "buildAgent.properties.erb"
-    user agent.user
-    user agent.group
+    user "teamcity"
+    user "teamcity"
     mode 0644
     variables agent.to_hash
   end

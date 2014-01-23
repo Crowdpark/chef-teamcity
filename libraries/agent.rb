@@ -29,6 +29,7 @@ module Teamcity
     def cache
       # cache agent + shorter calls
       @agent = @node['teamcity']['agents'][@name]
+      #puts @agent.to_json
     end
 
     # delegate to agent attributes hash of chef per default
@@ -42,7 +43,7 @@ module Teamcity
 
     # set default values for agent
     def set_defaults
-      agent = @node.default_unless['teamcity']['agents'][@name]
+      agent = {}
 
       agent['server_url'] = nil
       agent['name'] = nil # generate name by teamcity
@@ -62,6 +63,8 @@ module Teamcity
 
       agent['system_properties'] = {}
       agent['env_properties'] = {}
+
+      @node.default['teamcity']['agents'][@name] = agent.merge(@node.default['teamcity']['agents'][@name]);
 
       # recache
       cache
